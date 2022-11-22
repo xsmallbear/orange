@@ -1,5 +1,8 @@
 package com.bearcurb.orange.protocol;
 
+import com.bearcurb.orange.protocol.handle.OrangeRequestAddVerify;
+import com.bearcurb.orange.protocol.handle.OrangeResponseAddVerify;
+
 public class OrangeProtocolUtil {
   public static OrangeRequest getDefaultNewRequestInstance(String serviceName, String header, String body) {
     OrangeRequest request = new OrangeRequestAddVerify();

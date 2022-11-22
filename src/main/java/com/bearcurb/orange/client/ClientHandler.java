@@ -27,11 +27,6 @@ public class ClientHandler extends SimpleChannelInboundHandler<OrangeRequest> {
   }
 
   @Override
-  public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-    System.out.println("客户端已经五秒没有受到服务器的消息了");
-  }
-
-  @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
     cause.printStackTrace();
     ctx.close();

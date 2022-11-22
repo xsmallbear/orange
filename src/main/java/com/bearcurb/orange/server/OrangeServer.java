@@ -1,8 +1,9 @@
 package com.bearcurb.orange.server;
 
 import com.bearcurb.orange.client.IServer;
-import com.bearcurb.orange.protocol.OrangeServerProtocolDecoder;
-import com.bearcurb.orange.protocol.OrangeServerProtocolEncoder;
+import com.bearcurb.orange.protocol.handle.OrangeHeartBeatServerHandle;
+import com.bearcurb.orange.protocol.handle.OrangeServerProtocolDecoder;
+import com.bearcurb.orange.protocol.handle.OrangeServerProtocolEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -49,7 +50,8 @@ public class OrangeServer implements IServer {
         @Override
         protected void initChannel(SocketChannel ch) throws Exception {
           ChannelPipeline pipeline = ch.pipeline();
-          pipeline.addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS));
+          pipeline.addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS));
+          pipeline.addLast(new OrangeHeartBeatServerHandle());
           pipeline.addLast(new LineBasedFrameDecoder(1024));
           pipeline.addLast(new StringDecoder());
           pipeline.addLast(new StringEncoder());

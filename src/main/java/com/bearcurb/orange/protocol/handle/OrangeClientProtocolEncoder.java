@@ -1,5 +1,7 @@
-package com.bearcurb.orange.protocol;
+package com.bearcurb.orange.protocol.handle;
 
+import com.bearcurb.orange.protocol.OrangeProtocolAddverifyUtil;
+import com.bearcurb.orange.protocol.OrangeRequest;
 import com.google.gson.Gson;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
@@ -7,11 +9,11 @@ import io.netty.handler.codec.MessageToMessageEncoder;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class OrangeServerProtocolEncoder extends MessageToMessageEncoder<OrangeResponse> {
+public class OrangeClientProtocolEncoder extends MessageToMessageEncoder<OrangeRequest> {
   @Override
-  protected void encode(ChannelHandlerContext ctx, OrangeResponse msg, List<Object> out) throws Exception {
+  protected void encode(ChannelHandlerContext ctx, OrangeRequest msg, List<Object> out) throws Exception {
     try {
-      OrangeResponseAddVerify wrapper = OrangeProtocolAddverifyUtil.wrapperResponse(msg);
+      OrangeRequestAddVerify wrapper = OrangeProtocolAddverifyUtil.wrapperRequest(msg);
       String json = new Gson().toJson(wrapper) + System.getProperty("line.separator");
       out.add(json);
     } catch (Exception ok) {

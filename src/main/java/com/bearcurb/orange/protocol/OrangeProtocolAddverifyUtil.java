@@ -1,5 +1,10 @@
 package com.bearcurb.orange.protocol;
 
+import com.bearcurb.orange.protocol.OrangeRequest;
+import com.bearcurb.orange.protocol.OrangeResponse;
+import com.bearcurb.orange.protocol.handle.OrangeRequestAddVerify;
+import com.bearcurb.orange.protocol.handle.OrangeResponseAddVerify;
+
 public class OrangeProtocolAddverifyUtil {
   private static final String PROTOCOL_FLAG = "biscuit";
   private static final String PROTOCOL_VERSION = "0.1";

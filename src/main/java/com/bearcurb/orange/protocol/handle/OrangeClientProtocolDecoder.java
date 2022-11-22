@@ -1,5 +1,6 @@
-package com.bearcurb.orange.protocol;
+package com.bearcurb.orange.protocol.handle;
 
+import com.bearcurb.orange.protocol.OrangeProtocolAddverifyUtil;
 import com.google.gson.Gson;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;

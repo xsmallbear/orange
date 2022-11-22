@@ -1,8 +1,9 @@
 package com.bearcurb.orange.client;
 
-import com.bearcurb.orange.protocol.OrangeClientProtocolDecoder;
-import com.bearcurb.orange.protocol.OrangeClientProtocolEncoder;
 import com.bearcurb.orange.protocol.OrangeRequest;
+import com.bearcurb.orange.protocol.handle.OrangeClientProtocolDecoder;
+import com.bearcurb.orange.protocol.handle.OrangeClientProtocolEncoder;
+import com.bearcurb.orange.protocol.handle.OrangeHeartBeatClientHandle;
 import com.bearcurb.orange.server.IClient;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -37,7 +38,8 @@ public class OrangeClient implements IClient {
       @Override
       protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-        pipeline.addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS));
+        pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
+        pipeline.addLast(new OrangeHeartBeatClientHandle());
         pipeline.addLast(new LineBasedFrameDecoder(1024));
         pipeline.addLast(new StringDecoder());
         pipeline.addLast(new StringEncoder());
