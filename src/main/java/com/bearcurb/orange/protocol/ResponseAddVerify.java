@@ -1,8 +1,6 @@
-package com.bearcurb.orange.protocol.handle;
+package com.bearcurb.orange.protocol;
 
-import com.bearcurb.orange.protocol.OrangeResponse;
-
-public class OrangeResponseAddVerify extends OrangeResponse {
+public class ResponseAddVerify extends Response {
   private String protocolFlag;
   private String version;
 

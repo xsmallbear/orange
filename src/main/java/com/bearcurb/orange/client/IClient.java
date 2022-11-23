@@ -1,4 +1,4 @@
-package com.bearcurb.orange.server;
+package com.bearcurb.orange.client;
 
 public interface IClient {
   public void connect() throws InterruptedException;

@@ -9,7 +9,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 
 import java.nio.charset.StandardCharsets;
 
-public class OrangeHeartBeatClientHandle extends ChannelInboundHandlerAdapter {
+public class HeartBeatClientHandler extends ChannelInboundHandlerAdapter {
 
   private final String PING = "PING";
   private final String PONG = "PONG";
@@ -41,7 +41,6 @@ public class OrangeHeartBeatClientHandle extends ChannelInboundHandlerAdapter {
     }
     if ((new String(heartBuf, "UTF-8")).equals(PONG)) {
       // YES
-      System.out.println("收到心跳回复");
     } else {
       buf.resetReaderIndex();
       ctx.fireChannelRead(msg);

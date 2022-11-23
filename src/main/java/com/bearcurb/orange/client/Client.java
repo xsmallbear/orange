@@ -1,10 +1,9 @@
 package com.bearcurb.orange.client;
 
-import com.bearcurb.orange.protocol.OrangeRequest;
-import com.bearcurb.orange.protocol.handle.OrangeClientProtocolDecoder;
-import com.bearcurb.orange.protocol.handle.OrangeClientProtocolEncoder;
-import com.bearcurb.orange.protocol.handle.OrangeHeartBeatClientHandle;
-import com.bearcurb.orange.server.IClient;
+import com.bearcurb.orange.protocol.Request;
+import com.bearcurb.orange.protocol.handle.ClientProtocolDecoder;
+import com.bearcurb.orange.protocol.handle.ClientProtocolEncoder;
+import com.bearcurb.orange.protocol.handle.HeartBeatClientHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -20,14 +19,14 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
 
-public class OrangeClient implements IClient {
+public class Client implements IClient {
   private String host;
   private int port;
   private EventLoopGroup workerGroup = new NioEventLoopGroup();
   private Bootstrap bootstrap = new Bootstrap();
   private ClientHandler clientHandler = new ClientHandler();
 
-  public OrangeClient(String host, int port) {
+  public Client(String host, int port) {
     this.host = host;
     this.port = port;
     init();
@@ -39,12 +38,12 @@ public class OrangeClient implements IClient {
       protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
-        pipeline.addLast(new OrangeHeartBeatClientHandle());
+        pipeline.addLast(new HeartBeatClientHandler());
         pipeline.addLast(new LineBasedFrameDecoder(1024));
         pipeline.addLast(new StringDecoder());
         pipeline.addLast(new StringEncoder());
-        pipeline.addLast(new OrangeClientProtocolEncoder());
-        pipeline.addLast(new OrangeClientProtocolDecoder());
+        pipeline.addLast(new ClientProtocolEncoder());
+        pipeline.addLast(new ClientProtocolDecoder());
         pipeline.addLast(clientHandler);
       }
     });
@@ -60,7 +59,7 @@ public class OrangeClient implements IClient {
     workerGroup.shutdownGracefully().sync();
   }
 
-  public void sendMessage(OrangeRequest message) throws InterruptedException {
+  public void sendMessage(Request message) throws InterruptedException {
     clientHandler.sendMessage(message);
   }
 }

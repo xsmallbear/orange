@@ -1,37 +1,32 @@
 package com.bearcurb.orange.protocol;
 
-import com.bearcurb.orange.protocol.OrangeRequest;
-import com.bearcurb.orange.protocol.OrangeResponse;
-import com.bearcurb.orange.protocol.handle.OrangeRequestAddVerify;
-import com.bearcurb.orange.protocol.handle.OrangeResponseAddVerify;
-
-public class OrangeProtocolAddverifyUtil {
+public class ProtocolAddverifyUtil {
   private static final String PROTOCOL_FLAG = "biscuit";
   private static final String PROTOCOL_VERSION = "0.1";
 
 
-  public static OrangeRequestAddVerify wrapperRequest(OrangeRequest request) {
-    OrangeRequestAddVerify requestAddVerify = (OrangeRequestAddVerify) request;
+  public static RequestAddVerify wrapperRequest(Request request) {
+    RequestAddVerify requestAddVerify = (RequestAddVerify) request;
     requestAddVerify.setProtocolFlag(PROTOCOL_FLAG);
     requestAddVerify.setVersion(PROTOCOL_VERSION);
     return requestAddVerify;
   }
 
-  public static OrangeResponseAddVerify wrapperResponse(OrangeResponse response) {
-    OrangeResponseAddVerify responseAddVerify = (OrangeResponseAddVerify) response;
+  public static ResponseAddVerify wrapperResponse(Response response) {
+    ResponseAddVerify responseAddVerify = (ResponseAddVerify) response;
     responseAddVerify.setProtocolFlag(PROTOCOL_FLAG);
     responseAddVerify.setVersion(PROTOCOL_VERSION);
     return responseAddVerify;
   }
 
-  public static boolean orangeRequestVerify(OrangeRequestAddVerify request) {
+  public static boolean orangeRequestVerify(RequestAddVerify request) {
     if (request == null) return false;
     if (request.getProtocolFlag().equals(PROTOCOL_FLAG) == false) return false;
     if (request.getVersion().equals(PROTOCOL_VERSION) == false) return false;
     return true;
   }
 
-  public static boolean orangeResponseVerify(OrangeResponseAddVerify response) {
+  public static boolean orangeResponseVerify(ResponseAddVerify response) {
     if (response == null) return false;
     if (response.getProtocolFlag().equals(PROTOCOL_FLAG) == false) return false;
     if (response.getVersion().equals(PROTOCOL_VERSION) == false) return false;

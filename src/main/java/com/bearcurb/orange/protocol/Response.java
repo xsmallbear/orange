@@ -2,26 +2,27 @@ package com.bearcurb.orange.protocol;
 
 import java.io.Serializable;
 
-public class OrangeRequest implements Serializable {
-  private String serviceName;
+public class Response implements Serializable {
+  private int statue;
   private String header;
   private String body;
 
-  public OrangeRequest() {
+  public Response() {
   }
 
-  public OrangeRequest(String serviceName, String header, String body) {
-    this.serviceName = serviceName;
+  public Response(int statue, String header, String body) {
+    this.statue = statue;
     this.header = header;
     this.body = body;
   }
 
-  public String getServiceName() {
-    return serviceName;
+
+  public int getStatue() {
+    return statue;
   }
 
-  public void setServiceName(String serviceName) {
-    this.serviceName = serviceName;
+  public void setStatue(int statue) {
+    this.statue = statue;
   }
 
   public String getHeader() {

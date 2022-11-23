@@ -9,18 +9,21 @@ import io.netty.handler.timeout.IdleStateEvent;
 
 import java.nio.charset.StandardCharsets;
 
-public class OrangeHeartBeatServerHandle extends ChannelInboundHandlerAdapter {
+public class HeartBeatServerHandler extends ChannelInboundHandlerAdapter {
 
   private final String PING = "PING";
   private final String PONG = "PONG";
+  private int idleReaderTriggernumber = 0;
 
   @Override
   public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
     if (evt instanceof IdleStateEvent) {
       if (((IdleStateEvent) evt).state() == IdleState.READER_IDLE) {
-        // 在规定时间内没有收到客户端的上行数据, 主动断开连接
-        System.out.println("长时间没响应 断开");
-        ctx.close();
+        // long time no request
+        idleReaderTriggernumber++;
+        if (idleReaderTriggernumber > 3) {
+          ctx.close();
+        }
       } else {
         super.userEventTriggered(ctx, evt);
       }
@@ -29,13 +32,13 @@ public class OrangeHeartBeatServerHandle extends ChannelInboundHandlerAdapter {
 
   @Override
   public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    idleReaderTriggernumber = 0; //reset counter
     ByteBuf buf = (ByteBuf) msg;
     byte[] heartBuf = new byte[4];
     for (int i = 0; i < 4 && buf.isReadable(); i++) {
       heartBuf[i] = buf.readByte();
     }
     if ((new String(heartBuf, "UTF-8")).equals("PING")) {
-      System.out.println("收到PING 发送 PONG");
       // send PONG
       ByteBuf pong = Unpooled.buffer();
       pong.writeCharSequence(PONG, StandardCharsets.UTF_8);

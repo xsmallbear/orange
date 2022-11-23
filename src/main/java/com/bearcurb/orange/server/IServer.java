@@ -1,4 +1,4 @@
-package com.bearcurb.orange.client;
+package com.bearcurb.orange.server;
 
 public interface IServer {
 

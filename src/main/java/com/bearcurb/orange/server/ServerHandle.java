@@ -1,29 +1,29 @@
 package com.bearcurb.orange.server;
 
-import com.bearcurb.orange.protocol.OrangeRequest;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.bearcurb.orange.protocol.Request;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 @Sharable
-public class ServerHandle extends SimpleChannelInboundHandler<OrangeRequest> {
-  private Map<String, OrangeHandle> messageHandles = Maps.newHashMap();
-  private List<OrangeIntercept> interceptList = Lists.newArrayList();
-  private Map<OrangeIntercept, String[]> interceptExcludes = Maps.newHashMap();
+public class ServerHandle extends SimpleChannelInboundHandler<Request> {
+  private Map<String, IService> messageHandles = new HashMap<>();
+  private List<IIntercept> interceptList = new ArrayList<>();
+  private Map<IIntercept, String[]> interceptExcludes = new HashMap<>();
 
-  public void addHandle(String serviceName, OrangeHandle handle) {
+  public void addHandle(String serviceName, IService handle) {
     messageHandles.put(serviceName, handle);
   }
 
-  public void addIntercept(String[] excludes, OrangeIntercept intercept) {
+  public void addIntercept(String[] excludes, IIntercept intercept) {
     interceptList.add(intercept);
     interceptExcludes.put(intercept, excludes);
   }
@@ -37,16 +37,16 @@ public class ServerHandle extends SimpleChannelInboundHandler<OrangeRequest> {
   }
 
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, OrangeRequest request) throws Exception {
+  protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
     // context create
-    OrangeServerContext context = new OrangeServerContext();
+    ServerContext context = new ServerContext();
     context.setChannel(ctx.channel());
     context.setProtocol(request);
 
     String serviceName = request.getServiceName();
     //intercept
     for (int i = 0; i < interceptList.size(); i++) {
-      OrangeIntercept intercept = interceptList.get(i);
+      IIntercept intercept = interceptList.get(i);
       String[] excludes = interceptExcludes.get(intercept);
       boolean callThis = true;
       for (int j = 0; j < excludes.length; j++) {
@@ -65,17 +65,12 @@ public class ServerHandle extends SimpleChannelInboundHandler<OrangeRequest> {
       }
     }
     //call service handle
-    OrangeHandle handle = this.messageHandles.get(serviceName);
+    IService handle = this.messageHandles.get(serviceName);
     if (handle != null) {
       handle.handle(context);
     } else {
       //No handle
     }
-  }
-
-  @Override
-  public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-    System.out.println("这边已经五秒没有受到消息了");
   }
 
   @Override
