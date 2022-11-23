@@ -13,6 +13,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Server implements IServer {
@@ -31,12 +32,12 @@ public class Server implements IServer {
     init();
   }
 
-  public void addHandle(String serviceName, IService handle) {
-    serverHandler.addHandle(serviceName, handle);
+  public void addService(String serviceName, IService handle) {
+    ServiceManager.getInstance().registerService(serviceName, handle);
   }
 
-  public void addIntercept(String[] excludes, IIntercept intercept) {
-    serverHandler.addIntercept(excludes, intercept);
+  public void addIntercept(List<String> excludes, IIntercept intercept) {
+    ServiceManager.getInstance().registerIntercept(excludes, intercept);
   }
 
   public void init() {
