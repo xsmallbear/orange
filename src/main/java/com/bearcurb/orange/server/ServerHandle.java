@@ -1,6 +1,6 @@
 package com.bearcurb.orange.server;
 
-import com.bearcurb.orange.protocol.Request;
+import com.bearcurb.orange.protocol.NewProcotol;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Sharable
-public class ServerHandle extends SimpleChannelInboundHandler<Request> {
+public class ServerHandle extends SimpleChannelInboundHandler<NewProcotol> {
 
   @Override
 
@@ -22,13 +22,15 @@ public class ServerHandle extends SimpleChannelInboundHandler<Request> {
   }
 
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
+  protected void channelRead0(ChannelHandlerContext ctx, NewProcotol request) throws Exception {
+    System.out.println("channelRead0" + request);
     // context create
     ServerContext context = new ServerContext();
     context.setChannel(ctx.channel());
     context.setProtocol(request);
 
-    String serviceName = request.getServiceName();
+    String serviceName = request.getService();
+    System.out.println(serviceName);
     List<IIntercept> interceptList = ServiceManager.getInstance().getServiceIntercept(serviceName);
     for (int i = 0; i < interceptList.size(); i++) {
       if (interceptList.get(i).preHandle(context) == false) {

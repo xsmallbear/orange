@@ -1,14 +1,14 @@
 package com.bearcurb.orange.client;
 
 
-import com.bearcurb.orange.protocol.Request;
+import com.bearcurb.orange.protocol.NewProcotol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class ClientHandler extends SimpleChannelInboundHandler<Request> {
+public class ClientHandler extends SimpleChannelInboundHandler<NewProcotol> {
   private ChannelHandlerContext ctx;
 
-  public void sendMessage(Request message) throws InterruptedException {
+  public void sendMessage(NewProcotol message) throws InterruptedException {
     if (ctx != null) {
       ctx.writeAndFlush(message);
     }
@@ -22,8 +22,8 @@ public class ClientHandler extends SimpleChannelInboundHandler<Request> {
   }
 
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, Request msg) throws Exception {
-    System.out.println(msg.getServiceName());
+  protected void channelRead0(ChannelHandlerContext ctx, NewProcotol msg) throws Exception {
+    System.out.println(msg.getService());
   }
 
   @Override

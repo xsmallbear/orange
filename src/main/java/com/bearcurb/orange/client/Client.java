@@ -1,9 +1,7 @@
 package com.bearcurb.orange.client;
 
-import com.bearcurb.orange.protocol.Request;
-import com.bearcurb.orange.protocol.handle.ClientProtocolDecoder;
-import com.bearcurb.orange.protocol.handle.ClientProtocolEncoder;
-import com.bearcurb.orange.protocol.handle.HeartBeatClientHandler;
+import com.bearcurb.orange.protocol.NewProcotol;
+import com.bearcurb.orange.protocol.handle.OrangeProtocolCodec;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -15,9 +13,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
-import io.netty.handler.timeout.IdleStateHandler;
-
-import java.util.concurrent.TimeUnit;
 
 public class Client implements IClient {
   private String host;
@@ -37,13 +32,12 @@ public class Client implements IClient {
       @Override
       protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-        pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
-        pipeline.addLast(new HeartBeatClientHandler());
+//        pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
+//        pipeline.addLast(new HeartBeatClientHandler());
         pipeline.addLast(new LineBasedFrameDecoder(1024));
         pipeline.addLast(new StringDecoder());
         pipeline.addLast(new StringEncoder());
-        pipeline.addLast(new ClientProtocolEncoder());
-        pipeline.addLast(new ClientProtocolDecoder());
+        pipeline.addLast(new OrangeProtocolCodec());
         pipeline.addLast(clientHandler);
       }
     });
@@ -59,7 +53,7 @@ public class Client implements IClient {
     workerGroup.shutdownGracefully().sync();
   }
 
-  public void sendMessage(Request message) throws InterruptedException {
+  public void sendMessage(NewProcotol message) throws InterruptedException {
     clientHandler.sendMessage(message);
   }
 }
