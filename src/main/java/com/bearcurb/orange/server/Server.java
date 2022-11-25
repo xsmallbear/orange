@@ -1,16 +1,17 @@
 package com.bearcurb.orange.server;
 
-import com.bearcurb.orange.protocol.handle.OrangeProtocolCodec;
+import com.bearcurb.orange.protocol.NewOrangeProtocolCodec;
+import com.bearcurb.orange.server.handle.HeartBeatServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Server implements IServer {
 
@@ -43,12 +44,10 @@ public class Server implements IServer {
         @Override
         protected void initChannel(SocketChannel ch) throws Exception {
           ChannelPipeline pipeline = ch.pipeline();
-//          pipeline.addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS));
-//          pipeline.addLast(new HeartBeatServerHandler());
+          pipeline.addLast(new IdleStateHandler(3, 0, 0, TimeUnit.SECONDS));
           pipeline.addLast(new LineBasedFrameDecoder(1024));
-          pipeline.addLast(new StringDecoder());
-          pipeline.addLast(new StringEncoder());
-          pipeline.addLast(new OrangeProtocolCodec());
+          pipeline.addLast(new NewOrangeProtocolCodec());
+          pipeline.addLast(new HeartBeatServer());
           pipeline.addLast(serverHandler);
         }
       });

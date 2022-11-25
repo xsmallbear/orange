@@ -1,18 +1,17 @@
 package com.bearcurb.orange.client;
 
+import com.bearcurb.orange.client.handle.HeartBeatClient;
+import com.bearcurb.orange.protocol.NewOrangeProtocolCodec;
 import com.bearcurb.orange.protocol.NewProcotol;
-import com.bearcurb.orange.protocol.handle.OrangeProtocolCodec;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.concurrent.TimeUnit;
 
 public class Client implements IClient {
   private String host;
@@ -20,6 +19,7 @@ public class Client implements IClient {
   private EventLoopGroup workerGroup = new NioEventLoopGroup();
   private Bootstrap bootstrap = new Bootstrap();
   private ClientHandler clientHandler = new ClientHandler();
+  private Channel clientChannel;
 
   public Client(String host, int port) {
     this.host = host;
@@ -34,10 +34,10 @@ public class Client implements IClient {
         ChannelPipeline pipeline = ch.pipeline();
 //        pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
 //        pipeline.addLast(new HeartBeatClientHandler());
+        pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
         pipeline.addLast(new LineBasedFrameDecoder(1024));
-        pipeline.addLast(new StringDecoder());
-        pipeline.addLast(new StringEncoder());
-        pipeline.addLast(new OrangeProtocolCodec());
+        pipeline.addLast(new NewOrangeProtocolCodec());
+        pipeline.addLast(new HeartBeatClient());
         pipeline.addLast(clientHandler);
       }
     });
@@ -47,6 +47,11 @@ public class Client implements IClient {
   public void connect() throws InterruptedException {
     ChannelFuture f = bootstrap.connect(host, port).sync();
   }
+
+  public void closeSync() throws InterruptedException {
+    clientChannel.closeFuture().sync();
+  }
+
 
   @Override
   public void disconnect() throws InterruptedException {

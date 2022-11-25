@@ -23,7 +23,12 @@ public class ServerHandle extends SimpleChannelInboundHandler<NewProcotol> {
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, NewProcotol request) throws Exception {
-    System.out.println("channelRead0" + request);
+
+    System.out.println(request.getEvent());
+    if (request.getEvent() != NewProcotol.EventType.SIMPLE) {
+      ctx.fireChannelRead(request);
+      return;
+    }
     // context create
     ServerContext context = new ServerContext();
     context.setChannel(ctx.channel());
@@ -47,6 +52,7 @@ public class ServerHandle extends SimpleChannelInboundHandler<NewProcotol> {
 
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    System.out.println("这里发生了一个错误" + cause);
     cause.printStackTrace();
     ctx.close();
   }

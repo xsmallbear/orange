@@ -1,25 +1,22 @@
 package com.bearcurb.orange.protocol;
 
-public class NewProcotol {
-  private String flag;
+import java.io.Serializable;
+
+/**
+ * Orange Protocol
+ */
+public class NewProcotol implements Serializable {
+  private String flag = "";
   private boolean request;
-  private String requestId;
+  private String requestId = "";
   private int event;
   private boolean needResult;
-  private String service;
-  private String data;
+  private String service = "";
+  private String data = "";
 
-  public NewProcotol() {
-  }
-
-  public NewProcotol(String flag, boolean request, String requestId, int event, boolean needResult, String service, String data) {
-    this.flag = flag;
-    this.request = request;
-    this.requestId = requestId;
-    this.event = event;
-    this.needResult = needResult;
-    this.service = service;
-    this.data = data;
+  public class EventType {
+    public static final int HEART = 0;
+    public static final int SIMPLE = 1;
   }
 
   public String getFlag() {
@@ -50,7 +47,7 @@ public class NewProcotol {
     return event;
   }
 
-  public void setEvent(int event) {
+  public void setEvent(int Event) {
     this.event = event;
   }
 

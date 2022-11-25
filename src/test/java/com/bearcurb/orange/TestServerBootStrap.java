@@ -26,9 +26,8 @@ public class TestServerBootStrap {
     });
 
     server.start();
-    int i = 0;
-    while (true) {
-      i++;
-    }
+//    Thread.sleep(5000);
+//    System.out.println("关闭服务器");
+//    server.stop();
   }
 }
