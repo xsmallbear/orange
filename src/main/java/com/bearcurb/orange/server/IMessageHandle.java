@@ -1,5 +1,5 @@
 package com.bearcurb.orange.server;
 
-public interface IService {
+public interface IMessageHandle {
   public abstract void handle(ServerContext context);
 }

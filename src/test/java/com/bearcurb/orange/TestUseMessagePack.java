@@ -1,6 +1,6 @@
 package com.bearcurb.orange;
 
-import com.bearcurb.orange.protocol.NewProcotol;
+import com.bearcurb.orange.common.protocol.Procotol;
 import com.bearcurb.orange.server.util.ServerProtocolGenerator;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
@@ -11,12 +11,12 @@ import java.util.UUID;
 
 public class TestUseMessagePack {
   public static void main(String[] args) throws IOException {
-    NewProcotol procotol = ServerProtocolGenerator.getSimpleResultProtocol();
+    Procotol procotol = ServerProtocolGenerator.getSimpleResultProtocol();
 
-    procotol.setEvent(NewProcotol.EventType.HEART);
+    procotol.setEvent(Procotol.EventType.HEART);
     procotol.setRequest(true);
     procotol.setRequestId(UUID.randomUUID().toString());
-    procotol.setEvent(NewProcotol.EventType.SIMPLE);
+    procotol.setEvent(Procotol.EventType.SIMPLE);
     procotol.setService("registerServer");
     procotol.setData("this is data");
 
@@ -41,7 +41,7 @@ public class TestUseMessagePack {
 
   }
 
-  public static MessageBufferPacker getPacker(NewProcotol procotol) throws IOException {
+  public static MessageBufferPacker getPacker(Procotol procotol) throws IOException {
     MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
     packer.packString(procotol.getFlag());
     packer.packBoolean(procotol.isRequest());

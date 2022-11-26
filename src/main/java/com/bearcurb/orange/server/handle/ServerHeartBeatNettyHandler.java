@@ -1,27 +1,27 @@
 package com.bearcurb.orange.server.handle;
 
-import com.bearcurb.orange.protocol.NewProcotol;
+import com.bearcurb.orange.common.protocol.Procotol;
 import com.bearcurb.orange.server.util.ServerProtocolGenerator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
-public class HeartBeatServer extends SimpleChannelInboundHandler<NewProcotol> {
+public class ServerHeartBeatNettyHandler extends SimpleChannelInboundHandler<Procotol> {
   private int idleReaderTriggernumber = 0;
 
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, NewProcotol msg) throws Exception {
+  protected void channelRead0(ChannelHandlerContext ctx, Procotol msg) throws Exception {
     System.out.println(msg.getEvent());
-    if (msg.getEvent() != NewProcotol.EventType.HEART) {
+    if (msg.getEvent() != Procotol.EventType.HEART) {
       ctx.fireChannelRead(msg);
       return;
     }
     idleReaderTriggernumber = 0;
     //收到的是心跳包
     //发送心跳回复
-    NewProcotol protocol = ServerProtocolGenerator.getSimpleResultProtocol();
-    protocol.setEvent(NewProcotol.EventType.HEART);
+    Procotol protocol = ServerProtocolGenerator.getSimpleResultProtocol();
+    protocol.setEvent(Procotol.EventType.HEART);
     System.out.println("心跳");
     ctx.writeAndFlush(protocol);
   }

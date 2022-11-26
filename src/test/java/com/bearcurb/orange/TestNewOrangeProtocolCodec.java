@@ -1,7 +1,7 @@
 package com.bearcurb.orange;
 
-import com.bearcurb.orange.protocol.NewOrangeProtocolCodec;
-import com.bearcurb.orange.protocol.NewProcotol;
+import com.bearcurb.orange.common.protocol.OrangeProtocolCodec;
+import com.bearcurb.orange.common.protocol.Procotol;
 import com.bearcurb.orange.server.util.ServerProtocolGenerator;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -16,22 +16,22 @@ public class TestNewOrangeProtocolCodec {
   @Test
   public static void main(String[] args) throws Exception {
 
-    NewOrangeProtocolCodec codec = new NewOrangeProtocolCodec();
+    OrangeProtocolCodec codec = new OrangeProtocolCodec();
 
-    NewProcotol procotol = ServerProtocolGenerator.getSimpleResultProtocol();
+    Procotol procotol = ServerProtocolGenerator.getSimpleResultProtocol();
 
-    procotol.setEvent(NewProcotol.EventType.HEART);
+    procotol.setEvent(Procotol.EventType.HEART);
     procotol.setRequest(true);
     procotol.setRequestId(UUID.randomUUID().toString());
-    procotol.setEvent(NewProcotol.EventType.SIMPLE);
+    procotol.setEvent(Procotol.EventType.SIMPLE);
     procotol.setService("registerServer");
     procotol.setData("sdghjksahdkjghsakjldhgjkhasdjkghklsghkdgkhaskjldhkjlasdkjgksjkghadgkljahdkghjkasdkshdkgjsdhgkashgklasdkgjdghlasdhgkashdgkjasdh");
 
-    EmbeddedChannel embeddedChannel = new EmbeddedChannel(new LoggingHandler(), new LineBasedFrameDecoder(2048), new NewOrangeProtocolCodec());
+    EmbeddedChannel embeddedChannel = new EmbeddedChannel(new LoggingHandler(), new LineBasedFrameDecoder(2048), new OrangeProtocolCodec());
     embeddedChannel.writeOutbound(procotol);
     ByteBuf byteBuf = embeddedChannel.readOutbound();
     embeddedChannel.writeInbound(byteBuf);
-    NewProcotol nps = embeddedChannel.readInbound();
+    Procotol nps = embeddedChannel.readInbound();
 
     System.out.println(nps.getFlag());
     System.out.println(nps.isRequest());

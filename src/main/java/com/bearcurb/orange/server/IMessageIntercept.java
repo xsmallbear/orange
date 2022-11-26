@@ -1,6 +1,6 @@
 package com.bearcurb.orange.server;
 
-public interface IIntercept {
+public interface IMessageIntercept {
 
   public abstract boolean preHandle(ServerContext context);
 }

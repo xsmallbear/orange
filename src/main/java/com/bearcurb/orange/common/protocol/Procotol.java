@@ -1,11 +1,11 @@
-package com.bearcurb.orange.protocol;
+package com.bearcurb.orange.common.protocol;
 
 import java.io.Serializable;
 
 /**
  * Orange Protocol
  */
-public class NewProcotol implements Serializable {
+public class Procotol implements Serializable {
   private String flag = "";
   private boolean request;
   private String requestId = "";
