@@ -12,10 +12,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-public class OrangeProtocolCodec extends ByteToMessageCodec<Procotol> {
+public class OrangeProtocolCodec extends ByteToMessageCodec<Protocol> {
+
+  private final String splitFlag = "&$&";
 
   @Override
-  public void encode(ChannelHandlerContext ctx, Procotol msg, ByteBuf out) throws Exception {
+  public void encode(ChannelHandlerContext ctx, Protocol msg, ByteBuf out) throws Exception {
     try {
       MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
       packer.packString(Optional.of(msg.getFlag()).get());
@@ -25,14 +27,13 @@ public class OrangeProtocolCodec extends ByteToMessageCodec<Procotol> {
       packer.packBoolean(Optional.of(msg.isNeedResult()).get());
       packer.packString(Optional.of(msg.getService()).get());
       packer.packString(Optional.of(msg.getData()).get());
-      String end = "\r\n";
       byte[] packageData = packer.toByteArray();
-      byte[] packageEnd = end.getBytes(StandardCharsets.US_ASCII);
+      byte[] packageEnd = splitFlag.getBytes(StandardCharsets.US_ASCII);
       out.writeInt(packageData.length + packageEnd.length);
       out.writeBytes(packageData, 0, packageData.length);
       out.writeBytes(packageEnd, 0, packageEnd.length);
       // DEBUG
-      printEncodeDebugInfo(packageData, 10);
+//      printEncodeDebugInfo(packageData, 10);
       // DEBUG
     } catch (Exception e) {
       ctx.fireExceptionCaught(new CodecException());
@@ -43,15 +44,15 @@ public class OrangeProtocolCodec extends ByteToMessageCodec<Procotol> {
   public void decode(ChannelHandlerContext ctx, ByteBuf in, List out) throws Exception {
     try {
       // DEBUG
-      printDecodeDebugInfo(in);
+//      printDecodeDebugInfo(in);
       // DEBUG
-      int packageLength = in.readInt() - 2;
+      int packageLength = in.readInt() - splitFlag.length();
       byte[] packageData = new byte[packageLength];
       for (int i = 0; i < packageLength; i++) {
         packageData[i] = in.readByte();
       }
       MessageUnpacker packer = MessagePack.newDefaultUnpacker(packageData);
-      Procotol protocol = new Procotol();
+      Protocol protocol = new Protocol();
 
       protocol.setFlag(packer.unpackString());
       protocol.setRequest(packer.unpackBoolean());
@@ -61,8 +62,9 @@ public class OrangeProtocolCodec extends ByteToMessageCodec<Procotol> {
       protocol.setService(packer.unpackString());
       protocol.setData(packer.unpackString());
       out.add(protocol);
-      ctx.fireExceptionCaught(new CodecException());
+//      ctx.fireExceptionCaught(new CodecException());
     } catch (Exception e) {
+      e.printStackTrace();
       ctx.fireExceptionCaught(new CodecException());
     }
   }
@@ -81,7 +83,7 @@ public class OrangeProtocolCodec extends ByteToMessageCodec<Procotol> {
     int length = in.readInt();
     System.out.println(length);
     byte[] data = new byte[length];
-    for (int i = 0; i < length - 2; i++) {
+    for (int i = 0; i < length - splitFlag.length(); i++) {
       data[i] = in.readByte();
       System.out.print("[" + i + ":" + data[i] + "]");
       if (i != 0 && i % 10 == 0) {

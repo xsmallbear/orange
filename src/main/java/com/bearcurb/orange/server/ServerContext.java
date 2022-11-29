@@ -1,17 +1,17 @@
 package com.bearcurb.orange.server;
 
-import com.bearcurb.orange.common.protocol.Procotol;
+import com.bearcurb.orange.common.protocol.Protocol;
 import io.netty.channel.Channel;
 
 public class ServerContext {
   private Channel channel;
-  private Procotol protocol;
+  private Protocol protocol;
 
-  public Procotol getProtocol() {
+  public Protocol getProtocol() {
     return protocol;
   }
 
-  public void setProtocol(Procotol protocol) {
+  public void setProtocol(Protocol protocol) {
     this.protocol = protocol;
   }
 

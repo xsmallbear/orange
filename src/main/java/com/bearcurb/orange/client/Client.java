@@ -1,17 +1,20 @@
 package com.bearcurb.orange.client;
 
-import com.bearcurb.orange.client.handle.ClientHeartBeatNettyHandle;
 import com.bearcurb.orange.client.handle.ClientErrorNettyHandler;
+import com.bearcurb.orange.client.handle.ClientHeartBeatNettyHandle;
 import com.bearcurb.orange.common.protocol.OrangeProtocolCodec;
-import com.bearcurb.orange.common.protocol.Procotol;
+import com.bearcurb.orange.common.protocol.Protocol;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 public class Client implements IClient {
@@ -36,7 +39,10 @@ public class Client implements IClient {
 //        pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
 //        pipeline.addLast(new HeartBeatClientHandler());
         pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
-        pipeline.addLast(new LineBasedFrameDecoder(1024));
+        ByteBuf splitFlag = Unpooled.copiedBuffer("&$&".getBytes(StandardCharsets.UTF_8));
+        DelimiterBasedFrameDecoder delimiterBasedFrameDecoder = new DelimiterBasedFrameDecoder(2048, splitFlag);
+//        pipeline.addLast(new LineBasedFrameDecoder(1024));
+        pipeline.addLast(delimiterBasedFrameDecoder);
         pipeline.addLast(new OrangeProtocolCodec());
         pipeline.addLast(new ClientHeartBeatNettyHandle());
         pipeline.addLast(clientHandler);
@@ -48,15 +54,15 @@ public class Client implements IClient {
   @Override
   public void connect() throws InterruptedException {
     ChannelFuture f = bootstrap.connect(host, port).sync();
+    clientChannel = f.channel();
   }
-
 
   @Override
   public void disconnect() throws InterruptedException {
     workerGroup.shutdownGracefully().sync();
   }
 
-  public void sendMessage(Procotol message) throws InterruptedException {
+  public void sendMessage(Protocol message) throws InterruptedException {
     clientHandler.sendMessage(message);
   }
 }

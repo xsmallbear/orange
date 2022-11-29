@@ -1,14 +1,14 @@
 package com.bearcurb.orange.client.util;
 
-import com.bearcurb.orange.common.protocol.Procotol;
+import com.bearcurb.orange.common.protocol.Protocol;
 
 public class ClientProtocolGenerator {
 
-  public static Procotol getSimpleResultProtocol() {
-    Procotol procotol = new Procotol();
-    procotol.setRequest(true);
-    procotol.setFlag("ORANGE_1.1");
-    return procotol;
+  public static Protocol getSimpleResultProtocol() {
+    Protocol protocol = new Protocol();
+    protocol.setRequest(true);
+    protocol.setFlag("ORANGE_1.1");
+    return protocol;
   }
 
 }

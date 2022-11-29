@@ -1,6 +1,6 @@
 package com.bearcurb.orange.server.handle;
 
-import com.bearcurb.orange.common.protocol.Procotol;
+import com.bearcurb.orange.common.protocol.Protocol;
 import com.bearcurb.orange.server.IMessageHandle;
 import com.bearcurb.orange.server.IMessageIntercept;
 import com.bearcurb.orange.server.MessageHandleManager;
@@ -12,13 +12,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import java.util.List;
 
 @Sharable
-public class MessageHandleNettyHandler extends SimpleChannelInboundHandler<Procotol> {
+public class MessageHandleNettyHandler extends SimpleChannelInboundHandler<Protocol> {
 
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, Procotol request) {
-
-    System.out.println(request.getEvent());
-    if (request.getEvent() != Procotol.EventType.SIMPLE) {
+  protected void channelRead0(ChannelHandlerContext ctx, Protocol request) {
+    if (request.getEvent() != Protocol.EventType.SIMPLE) {
       ctx.fireChannelRead(request);
       return;
     }
@@ -43,12 +41,5 @@ public class MessageHandleNettyHandler extends SimpleChannelInboundHandler<Proco
     } else {
       //No handle
     }
-  }
-
-  @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-    System.out.println("这里发生了一个错误" + cause);
-    cause.printStackTrace();
-    ctx.close();
   }
 }

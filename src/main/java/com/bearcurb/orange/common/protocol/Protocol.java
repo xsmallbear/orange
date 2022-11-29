@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Orange Protocol
  */
-public class Procotol implements Serializable {
+public class Protocol implements Serializable {
   private String flag = "";
   private boolean request;
   private String requestId = "";

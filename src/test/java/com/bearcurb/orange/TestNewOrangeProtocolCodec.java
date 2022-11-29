@@ -1,37 +1,35 @@
 package com.bearcurb.orange;
 
 import com.bearcurb.orange.common.protocol.OrangeProtocolCodec;
-import com.bearcurb.orange.common.protocol.Procotol;
+import com.bearcurb.orange.common.protocol.Protocol;
 import com.bearcurb.orange.server.util.ServerProtocolGenerator;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.logging.LoggingHandler;
-import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 public class TestNewOrangeProtocolCodec {
 
-  @Test
   public static void main(String[] args) throws Exception {
 
     OrangeProtocolCodec codec = new OrangeProtocolCodec();
 
-    Procotol procotol = ServerProtocolGenerator.getSimpleResultProtocol();
+    Protocol protocol = ServerProtocolGenerator.getSimpleResultProtocol();
 
-    procotol.setEvent(Procotol.EventType.HEART);
-    procotol.setRequest(true);
-    procotol.setRequestId(UUID.randomUUID().toString());
-    procotol.setEvent(Procotol.EventType.SIMPLE);
-    procotol.setService("registerServer");
-    procotol.setData("sdghjksahdkjghsakjldhgjkhasdjkghklsghkdgkhaskjldhkjlasdkjgksjkghadgkljahdkghjkasdkshdkgjsdhgkashgklasdkgjdghlasdhgkashdgkjasdh");
+    protocol.setEvent(Protocol.EventType.HEART);
+    protocol.setRequest(true);
+    protocol.setRequestId(UUID.randomUUID().toString());
+    protocol.setEvent(Protocol.EventType.SIMPLE);
+    protocol.setService("registerServer");
+    protocol.setData("sdghjksahdkjghsakjldhgjkhasdjkghklsghkdgkhaskjldhkjlasdkjgksjkghadgkljahdkghjkasdkshdkgjsdhgkashgklasdkgjdghlasdhgkashdgkjasdh");
 
     EmbeddedChannel embeddedChannel = new EmbeddedChannel(new LoggingHandler(), new LineBasedFrameDecoder(2048), new OrangeProtocolCodec());
-    embeddedChannel.writeOutbound(procotol);
+    embeddedChannel.writeOutbound(protocol);
     ByteBuf byteBuf = embeddedChannel.readOutbound();
     embeddedChannel.writeInbound(byteBuf);
-    Procotol nps = embeddedChannel.readInbound();
+    Protocol nps = embeddedChannel.readInbound();
 
     System.out.println(nps.getFlag());
     System.out.println(nps.isRequest());

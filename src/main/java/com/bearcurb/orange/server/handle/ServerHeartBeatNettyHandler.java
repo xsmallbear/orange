@@ -1,28 +1,28 @@
 package com.bearcurb.orange.server.handle;
 
-import com.bearcurb.orange.common.protocol.Procotol;
+import com.bearcurb.orange.common.logger.OrangeLogger;
+import com.bearcurb.orange.common.protocol.Protocol;
 import com.bearcurb.orange.server.util.ServerProtocolGenerator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
-public class ServerHeartBeatNettyHandler extends SimpleChannelInboundHandler<Procotol> {
+public class ServerHeartBeatNettyHandler extends SimpleChannelInboundHandler<Protocol> {
   private int idleReaderTriggernumber = 0;
 
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, Procotol msg) throws Exception {
-    System.out.println(msg.getEvent());
-    if (msg.getEvent() != Procotol.EventType.HEART) {
+  protected void channelRead0(ChannelHandlerContext ctx, Protocol msg) throws Exception {
+    if (msg.getEvent() != Protocol.EventType.HEART) {
       ctx.fireChannelRead(msg);
       return;
     }
     idleReaderTriggernumber = 0;
     //收到的是心跳包
     //发送心跳回复
-    Procotol protocol = ServerProtocolGenerator.getSimpleResultProtocol();
-    protocol.setEvent(Procotol.EventType.HEART);
-    System.out.println("心跳");
+    Protocol protocol = ServerProtocolGenerator.getSimpleResultProtocol();
+    protocol.setEvent(Protocol.EventType.HEART);
+    OrangeLogger.getLogger().info("心跳");
     ctx.writeAndFlush(protocol);
   }
 
@@ -33,7 +33,7 @@ public class ServerHeartBeatNettyHandler extends SimpleChannelInboundHandler<Pro
         // long time no request
         idleReaderTriggernumber++;
         if (idleReaderTriggernumber > 3) {
-          System.out.println("超时三次 断开");
+          OrangeLogger.getLogger().info("超时三次 断开");
           ctx.close();
         }
       } else {

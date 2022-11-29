@@ -25,6 +25,11 @@ public class TestServerBootStrap {
       return false;
     });
 
-    server.start();
+    try {
+      server.start();
+    } catch (Exception ok) {
+      System.out.println("启动失败");
+      server.stop();
+    }
   }
 }

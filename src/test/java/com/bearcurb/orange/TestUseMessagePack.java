@@ -1,6 +1,6 @@
 package com.bearcurb.orange;
 
-import com.bearcurb.orange.common.protocol.Procotol;
+import com.bearcurb.orange.common.protocol.Protocol;
 import com.bearcurb.orange.server.util.ServerProtocolGenerator;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
@@ -11,16 +11,16 @@ import java.util.UUID;
 
 public class TestUseMessagePack {
   public static void main(String[] args) throws IOException {
-    Procotol procotol = ServerProtocolGenerator.getSimpleResultProtocol();
+    Protocol protocol = ServerProtocolGenerator.getSimpleResultProtocol();
 
-    procotol.setEvent(Procotol.EventType.HEART);
-    procotol.setRequest(true);
-    procotol.setRequestId(UUID.randomUUID().toString());
-    procotol.setEvent(Procotol.EventType.SIMPLE);
-    procotol.setService("registerServer");
-    procotol.setData("this is data");
+    protocol.setEvent(Protocol.EventType.HEART);
+    protocol.setRequest(true);
+    protocol.setRequestId(UUID.randomUUID().toString());
+    protocol.setEvent(Protocol.EventType.SIMPLE);
+    protocol.setService("registerServer");
+    protocol.setData("this is data");
 
-    byte[] msgData = getPacker(procotol).toByteArray();
+    byte[] msgData = getPacker(protocol).toByteArray();
 
     System.out.println("msgData:" + msgData.length);
     for (int i = 0; i < msgData.length; i++) {
@@ -41,15 +41,15 @@ public class TestUseMessagePack {
 
   }
 
-  public static MessageBufferPacker getPacker(Procotol procotol) throws IOException {
+  public static MessageBufferPacker getPacker(Protocol protocol) throws IOException {
     MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
-    packer.packString(procotol.getFlag());
-    packer.packBoolean(procotol.isRequest());
-    packer.packString(procotol.getRequestId());
-    packer.packInt(procotol.getEvent());
-    packer.packBoolean(procotol.isNeedResult());
-    packer.packString(procotol.getService());
-    packer.packString(procotol.getData());
+    packer.packString(protocol.getFlag());
+    packer.packBoolean(protocol.isRequest());
+    packer.packString(protocol.getRequestId());
+    packer.packInt(protocol.getEvent());
+    packer.packBoolean(protocol.isNeedResult());
+    packer.packString(protocol.getService());
+    packer.packString(protocol.getData());
     return packer;
   }
 }
