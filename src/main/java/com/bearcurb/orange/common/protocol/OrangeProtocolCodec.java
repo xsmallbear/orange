@@ -1,5 +1,6 @@
 package com.bearcurb.orange.common.protocol;
 
+import com.bearcurb.orange.common.debug.OrangeProtocolCodecUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
@@ -19,6 +20,7 @@ public class OrangeProtocolCodec extends ByteToMessageCodec<Protocol> {
   @Override
   public void encode(ChannelHandlerContext ctx, Protocol msg, ByteBuf out) throws Exception {
     try {
+      OrangeProtocolCodecUtil.printProtocol(msg);  //DEBUG
       MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
       packer.packString(Optional.of(msg.getFlag()).get());
       packer.packBoolean(Optional.of(msg.isRequest()).get());
@@ -32,9 +34,6 @@ public class OrangeProtocolCodec extends ByteToMessageCodec<Protocol> {
       out.writeInt(packageData.length + packageEnd.length);
       out.writeBytes(packageData, 0, packageData.length);
       out.writeBytes(packageEnd, 0, packageEnd.length);
-      // DEBUG
-//      printEncodeDebugInfo(packageData, 10);
-      // DEBUG
     } catch (Exception e) {
       ctx.fireExceptionCaught(new CodecException());
     }
@@ -61,8 +60,8 @@ public class OrangeProtocolCodec extends ByteToMessageCodec<Protocol> {
       protocol.setNeedResult(packer.unpackBoolean());
       protocol.setService(packer.unpackString());
       protocol.setData(packer.unpackString());
+      OrangeProtocolCodecUtil.printProtocol(protocol);  //DEBUG
       out.add(protocol);
-//      ctx.fireExceptionCaught(new CodecException());
     } catch (Exception e) {
       e.printStackTrace();
       ctx.fireExceptionCaught(new CodecException());

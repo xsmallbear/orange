@@ -1,6 +1,7 @@
 package com.bearcurb.orange;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 

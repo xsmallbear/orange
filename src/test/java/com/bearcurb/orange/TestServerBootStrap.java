@@ -17,7 +17,7 @@ public class TestServerBootStrap {
     server.registerMessageHandle("a", context -> logger.info("这里是a的调用"));
 
     List<String> excludes = new ArrayList<>();
-//    excludes.add("a");
+    excludes.add("a");
     excludes.add("b");
     excludes.add("c");
     server.registerMessageIntercept(excludes, context -> {
