@@ -36,12 +36,9 @@ public class Client implements IClient {
       @Override
       protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-//        pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
-//        pipeline.addLast(new HeartBeatClientHandler());
         pipeline.addLast(new IdleStateHandler(8, 4, 0, TimeUnit.SECONDS));
         ByteBuf splitFlag = Unpooled.copiedBuffer("&$&".getBytes(StandardCharsets.UTF_8));
         DelimiterBasedFrameDecoder delimiterBasedFrameDecoder = new DelimiterBasedFrameDecoder(2048, splitFlag);
-//        pipeline.addLast(new LineBasedFrameDecoder(1024));
         pipeline.addLast(delimiterBasedFrameDecoder);
         pipeline.addLast(new OrangeProtocolCodec());
         pipeline.addLast(new ClientHeartBeatNettyHandle());
