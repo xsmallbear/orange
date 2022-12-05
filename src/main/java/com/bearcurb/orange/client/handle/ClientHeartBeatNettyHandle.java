@@ -1,7 +1,7 @@
 package com.bearcurb.orange.client.handle;
 
-import com.bearcurb.orange.client.util.ClientProtocolGenerator;
 import com.bearcurb.orange.common.protocol.Protocol;
+import com.bearcurb.orange.common.protocol.ProtocolGenerator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -24,7 +24,7 @@ public class ClientHeartBeatNettyHandle extends SimpleChannelInboundHandler<Prot
       IdleState state = ((IdleStateEvent) evt).state();
       if (state == IdleState.WRITER_IDLE) {
         //发送心跳回复
-        Protocol protocol = ClientProtocolGenerator.getSimpleResultProtocol();
+        Protocol protocol = ProtocolGenerator.getSimpleClientMessage();
         protocol.setEvent(Protocol.EventType.HEART);
         ctx.writeAndFlush(protocol);
       } else {

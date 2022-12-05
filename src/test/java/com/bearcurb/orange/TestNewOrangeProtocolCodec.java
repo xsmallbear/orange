@@ -2,7 +2,7 @@ package com.bearcurb.orange;
 
 import com.bearcurb.orange.common.protocol.OrangeProtocolCodec;
 import com.bearcurb.orange.common.protocol.Protocol;
-import com.bearcurb.orange.server.util.ServerProtocolGenerator;
+import com.bearcurb.orange.common.protocol.ProtocolGenerator;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
@@ -16,7 +16,7 @@ public class TestNewOrangeProtocolCodec {
 
     OrangeProtocolCodec codec = new OrangeProtocolCodec();
 
-    Protocol protocol = ServerProtocolGenerator.getSimpleResultProtocol();
+    Protocol protocol = ProtocolGenerator.getSimpleServerMessage();
 
     protocol.setEvent(Protocol.EventType.HEART);
     protocol.setRequest(true);

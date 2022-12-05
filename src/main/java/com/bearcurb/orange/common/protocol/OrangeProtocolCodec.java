@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class OrangeProtocolCodec extends ByteToMessageCodec<Protocol> {
 
-  private final String splitFlag = "&$&";
+  public static final String splitFlag = "&$&";
 
   @Override
   public void encode(ChannelHandlerContext ctx, Protocol msg, ByteBuf out) throws Exception {

@@ -1,5 +1,6 @@
 package com.bearcurb.orange.server;
 
+import com.bearcurb.orange.common.OrangeSplitPackageHandler;
 import com.bearcurb.orange.common.logger.LogLevel;
 import com.bearcurb.orange.common.logger.OrangeLogger;
 import com.bearcurb.orange.common.protocol.OrangeProtocolCodec;
@@ -13,7 +14,6 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.nio.charset.StandardCharsets;
@@ -27,8 +27,7 @@ public class Server implements IServer {
   private int port;
   private int heartbeatDetectionTime;
   private Channel serverChannel;
-  private EventLoopGroup bossGroup = new NioEventLoopGroup();
-  private EventLoopGroup workerGroup = new NioEventLoopGroup();
+  private EventLoopGroup group = new NioEventLoopGroup();
   private ServerBootstrap serverBootstrap = new ServerBootstrap();
 
   public void setHeartbeatDetectionTime(int heartbeatDetectionTime) {
@@ -51,34 +50,28 @@ public class Server implements IServer {
   }
 
   public void init() {
-    IdleStateHandler idleStateHandler = new IdleStateHandler(3, 0, 0, TimeUnit.SECONDS);
-//    LineBasedFrameDecoder lineBasedFrameDecoder = new LineBasedFrameDecoder(1024);
     ByteBuf splitFlag = Unpooled.copiedBuffer("&$&".getBytes(StandardCharsets.US_ASCII));
-    DelimiterBasedFrameDecoder delimiterBasedFrameDecoder = new DelimiterBasedFrameDecoder(2048, splitFlag);
-    OrangeProtocolCodec orangeProtocolCodecHandler = new OrangeProtocolCodec();
-    ServerHeartBeatNettyHandler serverHeartBeatNettyHandler = new ServerHeartBeatNettyHandler();
-    MessageHandleNettyHandler serverMessageHandler = new MessageHandleNettyHandler();
-    ServerErrorNettyHandler serverErrorNettyHandler = new ServerErrorNettyHandler();
 
-    serverBootstrap.group(bossGroup, workerGroup)
+    serverBootstrap.group(group)
       .channel(NioServerSocketChannel.class)
+      .localAddress(port)
       .childHandler(new ChannelInitializer<SocketChannel>() {
         @Override
         protected void initChannel(SocketChannel ch) {
           ChannelPipeline pipeline = ch.pipeline();
-          pipeline.addLast(idleStateHandler);
-          pipeline.addLast(delimiterBasedFrameDecoder);
-          pipeline.addLast(orangeProtocolCodecHandler);
-          pipeline.addLast(serverHeartBeatNettyHandler);
-          pipeline.addLast(serverMessageHandler);
-          pipeline.addLast(serverErrorNettyHandler);
+          pipeline.addLast(new IdleStateHandler(heartbeatDetectionTime, 0, 0, TimeUnit.SECONDS));
+          pipeline.addLast(new OrangeSplitPackageHandler(2048));
+          pipeline.addLast(new OrangeProtocolCodec());
+          pipeline.addLast(new ServerHeartBeatNettyHandler());
+          pipeline.addLast(new MessageHandleNettyHandler());
+          pipeline.addLast(new ServerErrorNettyHandler());
         }
       });
   }
 
   @Override
   public void start() throws InterruptedException {
-    ChannelFuture future = serverBootstrap.bind(host, port).sync();
+    ChannelFuture future = serverBootstrap.bind().sync();
     serverChannel = future.channel();
   }
 
@@ -88,7 +81,9 @@ public class Server implements IServer {
       serverChannel.close();
       serverChannel = null;
     }
-    bossGroup.shutdownGracefully().sync();
-    workerGroup.shutdownGracefully().sync();
+    if (group != null) {
+      group.shutdownGracefully().sync();
+      group = null;
+    }
   }
 }

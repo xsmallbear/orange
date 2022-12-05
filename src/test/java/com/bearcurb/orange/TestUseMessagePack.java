@@ -1,7 +1,7 @@
 package com.bearcurb.orange;
 
 import com.bearcurb.orange.common.protocol.Protocol;
-import com.bearcurb.orange.server.util.ServerProtocolGenerator;
+import com.bearcurb.orange.common.protocol.ProtocolGenerator;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class TestUseMessagePack {
   public static void main(String[] args) throws IOException {
-    Protocol protocol = ServerProtocolGenerator.getSimpleResultProtocol();
+    Protocol protocol = ProtocolGenerator.getSimpleServerMessage();
 
     protocol.setEvent(Protocol.EventType.HEART);
     protocol.setRequest(true);
