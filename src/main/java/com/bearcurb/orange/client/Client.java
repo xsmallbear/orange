@@ -59,6 +59,12 @@ public class Client implements IClient {
     workerGroup.shutdownGracefully().sync();
   }
 
+  /**
+   * 向服务器发送一个消息
+   *
+   * @param message
+   * @throws InterruptedException
+   */
   public void sendMessage(Protocol message) throws InterruptedException {
     clientHandler.sendMessage(message);
   }

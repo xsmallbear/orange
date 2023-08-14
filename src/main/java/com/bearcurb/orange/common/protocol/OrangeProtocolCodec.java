@@ -42,9 +42,6 @@ public class OrangeProtocolCodec extends ByteToMessageCodec<Protocol> {
   @Override
   public void decode(ChannelHandlerContext ctx, ByteBuf in, List out) throws Exception {
     try {
-      // DEBUG
-//      printDecodeDebugInfo(in);
-      // DEBUG
       int packageLength = in.readInt() - splitFlag.length();
       byte[] packageData = new byte[packageLength];
       for (int i = 0; i < packageLength; i++) {
